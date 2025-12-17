@@ -1,0 +1,42 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite3
+sale.session.sql
+
+# Environment variables and secrets
+.env
+.flaskenv
+
+# Instance folder
+instance/
+
+# Node
+node_modules/
+
+# Editor config
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+temp_*.json
+
