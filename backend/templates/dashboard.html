@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Sales Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f9fc;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .summary-card {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        .summary-card .card-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        .chart-card {
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            transition: all 0.3s ease;
+        }
+        .chart-card:hover {
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .data-table th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        .history-item {
+            transition: background-color 0.2s;
+        }
+        .history-item:hover {
+            background-color: #f8f9fc !important;
+        }
+        .history-item.active {
+            background-color: #e7f1ff !important;
+            border-left: 4px solid var(--primary-color);
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header py-4 mb-4">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-white">
+                        <i class="bi bi-graph-up me-2"></i>Sales Analytics Dashboard
+                    </h1>
+                    <p class="text-white-50 mb-0">Comprehensive sales performance overview</p>
+                </div>
+                <div>
+                    <span class="badge bg-white text-primary">
+                        {{ current_time.strftime('%Y-%m-%d %H:%M') if current_time else 'N/A' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+
+        <!-- Upload History Panel -->
+        {% if uploads %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-clock-history me-2"></i>Your Upload History
+                    <span class="badge bg-primary ms-2">{{ uploads|length }}</span>
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for up in uploads %}
+                    <a href="{{ url_for('dashboard', upload_id=up.id) }}" 
+                       class="list-group-item list-group-item-action history-item d-flex justify-content-between align-items-center {% if up.is_active %}active{% endif %}">
+                        <div>
+                            <div class="fw-bold">{{ up.filename }}</div>
+                            <small class="text-muted">
+                                {{ up.upload_date }} • {{ up.records }} records • 
+                                {{ up.symbol }}{{ "{:,.0f}".format(up.total_revenue) }}
+                            </small>
+                        </div>
+                        {% if not up.is_active %}
+                        <form action="{{ url_for('delete_upload', upload_id=up.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                    onclick="return confirm('Delete {{ up.filename }}? This cannot be undone.')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Dataset Info -->
+        <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Currently viewing:</strong> {{ selected_upload.filename }}
+            <small class="ms-2">(uploaded on {{ selected_upload.upload_date.strftime('%B %d, %Y at %H:%M') }})</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+
+        <!-- File Upload Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-upload me-2"></i>Upload Sales Data
+                </h6>
+                <small class="text-muted">Supports .xlsx, .csv formats</small>
+            </div>
+            <div class="card-body">
+                <form id="uploadForm" enctype="multipart/form-data" class="row g-3">
+                    <div class="col-md-8">
+                        <input class="form-control" type="file" id="file" name="file" accept=".xlsx,.csv" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-cloud-arrow-up me-2"></i>Process Data
+                        </button>
+                    </div>
+                </form>
+                <div id="uploadMessage" class="mt-3"></div>
+            </div>
+        </div>
+
+        {% if data %}
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="summary-card card h-100 border-left-primary">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Revenue</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ currency_symbol }}{{ "{:,.2f}".format(data | sum(attribute='total')) }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-currency-dollar card-icon text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="summary-card card h-100 border-left-success">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Items Sold</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ data | sum(attribute='quantity') }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-cart-check card-icon text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="summary-card card h-100 border-left-info">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Unique Products</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ (data | map(attribute='product') | unique | list) | length }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-tags card-icon text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="summary-card card h-100 border-left-warning">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Avg. Sale Value</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ currency_symbol }}{{ "{:,.2f}".format((data | sum(attribute='total')) / data | length) }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-graph-up card-icon text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="chart-card card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-bar-chart me-2"></i>Revenue by Product</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            {% if charts.sales_by_product %}
+                            <img src="data:image/png;base64,{{ charts.sales_by_product }}" class="img-fluid w-100" alt="Revenue by Product">
+                            {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                                <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chart data not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="chart-card card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-graph-up me-2"></i>Monthly Sales Trend</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            {% if charts.sales_trend %}
+                            <img src="data:image/png;base64,{{ charts.sales_trend }}" class="img-fluid w-100" alt="Sales Trend">
+                            {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                                <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chart data not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="chart-card card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-pie-chart me-2"></i>Revenue Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            {% if charts.revenue_distribution %}
+                            <img src="data:image/png;base64,{{ charts.revenue_distribution }}" class="img-fluid w-100" alt="Revenue Distribution">
+                            {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                                <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chart data not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="chart-card card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-star me-2"></i>Top Selling Products</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            {% if charts.top_products_qty %}
+                            <img src="data:image/png;base64,{{ charts.top_products_qty }}" class="img-fluid w-100" alt="Top Products">
+                            {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                                <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chart data not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="chart-card card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-calendar-week me-2"></i>Sales by Weekday</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            {% if charts.weekday_sales %}
+                            <img src="data:image/png;base64,{{ charts.weekday_sales }}" class="img-fluid w-100" alt="Weekday Sales">
+                            {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                                <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Chart data not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-table me-2"></i>Sales Data
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered data-table" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                {% for key in data[0].keys() %}
+                                <th>{{ key }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data %}
+                            <tr>
+                                {% for key, value in row.items() %}
+                                <td>
+                                    {% if 'price' in key.lower() or 'total' in key.lower() %}
+                                        <span class="font-weight-bold">{{ currency_symbol }}{{ "{:,.2f}".format(value) }}</span>
+                                    {% elif key.lower() == 'quantity' %}
+                                        <span class="badge bg-primary rounded-pill">{{ value }}</span>
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-file-earmark-excel text-muted" style="font-size: 3rem;"></i>
+                <h3 class="mt-3 text-muted">No Data Available</h3>
+                <p class="text-muted">Upload a file to begin your sales analysis</p>
+                <button class="btn btn-primary mt-3" onclick="document.getElementById('file').click()">
+                    <i class="bi bi-upload me-2"></i>Upload File
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('file');
+            const uploadBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = uploadBtn.innerHTML;
+
+            if (!fileInput.files[0]) {
+                showMessage('Please select a file first', 'danger');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> Processing...`;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                const response = await fetch('/upload', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (result.error) {
+                    showMessage(result.error, 'danger');
+                } else {
+                    showMessage(result.message + ' Reloading...', 'success');
+                    setTimeout(() => window.location.reload(), 1200);
+                }
+            } catch (error) {
+                showMessage('Upload failed. Please try again.', 'danger');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalBtnText;
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('uploadMessage');
+            messageDiv.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            setTimeout(() => {
+                const alert = messageDiv.querySelector('.alert');
+                if (alert) new bootstrap.Alert(alert).close();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

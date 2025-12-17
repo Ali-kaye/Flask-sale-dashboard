@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upload</title>
+</head>
+<body>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" id="fileInput" accept=".csv, .xlsx">
+        <button type="submit">Upload</button>
+    </form>
+    
+    <h2>Visualization:</h2>
+    <img id="chart" alt="Generated Chart">
+    
+    <h2>Forecasting:</h2>
+    <p id="forecast"></p>
+<script>
+    document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    let formData = new FormData();
+    let fileInput = document.getElementById("fileInput");
+
+    if (fileInput.files.length === 0) {
+        alert("Please select a file.");
+        return;
+    }
+
+    formData.append("file", fileInput.files[0]);
+
+    try {
+        let response = await fetch("http://127.0.0.1:5001/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        let result = await response.json();
+
+        if (!response.ok) {
+            alert("Error: " + (result.error || "Unknown error"));
+        } else {
+            document.getElementById("chart").src = "data:image/png;base64," + result.chart;
+            document.getElementById("forecast").innerText = result.forecast;
+        }
+    } catch (error) {
+        alert("Upload failed: " + error.message);
+    }
+});
+
+</script>    
+</body>
+</html>

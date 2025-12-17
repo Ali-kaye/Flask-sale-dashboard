@@ -1,0 +1,134 @@
+2025-04-02 10:01:32,893 - app - ERROR - Exception on /dashboard [GET]
+Traceback (most recent call last):
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/backend/app.py", line 340, in dashboard
+    return jsonify({"error": "Unauthorized"}), 401
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/jaymoh/CRM/backend/templates/dashboard.html", line 505, in top-level template code
+    `Total Revenue: ${{ "{:,.2f}".format(data | sum(attribute='Total (USD)')) }}`,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/async_utils.py", line 48, in wrapper
+    return normal_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/filters.py", line 1334, in sync_do_sum
+    iterable = map(make_attrgetter(environment, attribute), iterable)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not iterable
+2025-04-02 10:01:38,857 - app - ERROR - Exception on /dashboard [GET]
+Traceback (most recent call last):
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/backend/app.py", line 340, in dashboard
+    return jsonify({"error": "Unauthorized"}), 401
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/jaymoh/CRM/backend/templates/dashboard.html", line 505, in top-level template code
+    `Total Revenue: ${{ "{:,.2f}".format(data | sum(attribute='Total (USD)')) }}`,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/async_utils.py", line 48, in wrapper
+    return normal_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/filters.py", line 1334, in sync_do_sum
+    iterable = map(make_attrgetter(environment, attribute), iterable)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not iterable
+2025-04-02 10:01:55,454 - app - ERROR - Exception on /dashboard [GET]
+Traceback (most recent call last):
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/backend/app.py", line 340, in dashboard
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/jaymoh/CRM/backend/templates/dashboard.html", line 505, in top-level template code
+    `Total Revenue: ${{ "{:,.2f}".format(data | sum(attribute='Total (USD)')) }}`,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/async_utils.py", line 48, in wrapper
+    return normal_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaymoh/CRM/venv/lib/python3.12/site-packages/jinja2/filters.py", line 1334, in sync_do_sum
+    iterable = map(make_attrgetter(environment, attribute), iterable)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not iterable
+2025-04-02 10:03:01,971 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:42:40,410 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:44:52,026 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:46:54,474 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:54:46,110 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:55:24,668 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 10:56:31,950 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:31:20,303 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:38:21,540 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:39:30,923 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:51:28,413 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:52:58,040 - app - ERROR - Chart generation error: name 'save_chart_to_base64' is not defined
+Traceback (most recent call last):
+  File "/home/jaymoh/CRM/backend/app.py", line 170, in generate_charts
+    charts['sales_trend'] = save_chart_to_base64()
+                            ^^^^^^^^^^^^^^^^^^^^
+NameError: name 'save_chart_to_base64' is not defined
+2025-04-02 11:55:28,124 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-02 11:55:48,420 - app - ERROR - Sales Trend chart error: 'str' object has no attribute 'plot'
+2025-04-03 17:56:02,836 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (USD)', 'Total (USD)']
+2025-04-03 17:56:06,696 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (USD)', 'Total (USD)']
+2025-04-03 17:58:19,809 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (Ksh)', 'Total (Ksh)']
+2025-04-03 17:58:39,345 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (Ksh)', 'Total (Ksh)']
+2025-04-03 17:59:17,934 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (Ksh)', 'Total (Ksh)']
+2025-04-03 17:59:38,940 - app - ERROR - Missing required columns: ['price', 'total']. Available columns: ['Date', 'product', 'quantity', 'Price (Ksh)', 'Total (Ksh)']

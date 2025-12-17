@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Report</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+    <h2>Data Analysis Report</h2>
+
+    <h3>Scatter Plot: Actual vs. Predicted</h3>
+    {{ scatter_html | safe }}
+
+    <h3>Sales Trends & Forecast</h3>
+    {{ line_html | safe }}
+
+    <h3>Future Forecasting</h3>
+    {{ forecast_html | safe }}
+
+    <h3>Predictions:</h3>
+    <table border="1">
+        <tr>
+            {% for col in data[0].keys() %}
+                <th>{{ col }}</th>
+            {% endfor %}
+        </tr>
+        {% for row in data %}
+            <tr>
+                {% for value in row.values() %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <button onclick="downloadPDF()">Download Report (PDF)</button>
+
+    <script>
+        function downloadPDF() {
+            window.location.href = "/download_report";
+        }
+    </script>
+
+</body>
+</html>
